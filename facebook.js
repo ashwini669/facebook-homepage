@@ -8,10 +8,11 @@ $(document).ready(function(){
         var re_password=$("#re-pwd").val();
         var password= $('#pwd').val();
         var date= $("#date").val();
+        var phone_no= $("#num").val();
         var gender = $("input[name='gender']:checked").val();
         
         var letters = /^[A-Za-z]+$/;
-       // var phonenum = /^\d{10}$/;
+        var phonenum = /^\d{10}$/;
         var pass=  /^[A-Za-z]\w{5,14}$/;
         
        if(fname!="" && fname.match(letters))    
@@ -24,25 +25,28 @@ $(document).ready(function(){
              {
              if(password.length!=0 && password.match(pass)&& password==re_password)
                 { 
-                    
                   if (gender!=undefined)
-                    {          
-                       let user_data=localStorage.getItem("user_table");
-                       if(user_data==null)
-                       {
-                           task=[];
-                        }
-                       else{
-                             task=JSON.parse(user_data);
-                           }
-                       task.push({'Firstname':fname,'Lastname':lname,'Email':email,'Password':password,'Date of Birth':date,'Gender':gender});
-                       localStorage.setItem("user_table",JSON.stringify(task));
-                       alert('your account is created successfully');
+                    {  
+                      if(phone_no!=""&&phone_no.match(phonenum)) 
+                      {       
+                        let user_data=localStorage.getItem("user_table");
+                        if(user_data==null)
+                        {
+                            task=[];
+                          }
+                        else{
+                              task=JSON.parse(user_data);
+                            }
+                        task.push({'Firstname':fname,'Lastname':lname,'Email':email,'Password':password,'Date of Birth':date,'Gender':gender,'Phone_number':phone_no});
+                        localStorage.setItem("user_table",JSON.stringify(task));
+                        alert('your account is created successfully');
+                      }
+                      else{alert("invalid phone number")}
                     } 
                     else{alert("select gender")}                          
               }
                 else{ alert("invalid password");}
-           }
+            }
            else{alert("invalid date");}
          }
            else{alert("invalid email");}
@@ -54,7 +58,7 @@ $(document).ready(function(){
       
       $('#signin').click(function(){
   
-        let emailadd = $('#emailadd').val();
+        let uname = $('#emailadd').val();
         let pass =$('#pass').val();
             
           let data=JSON.parse(localStorage.getItem("user_table"));
@@ -66,35 +70,38 @@ $(document).ready(function(){
                   var item=value;
                   var x=item.Email;
                   var y=item.Password;
+                  var z=item.Phone_number;
                                   
-                  if(x === emailadd && y === pass)
+                  if((x === uname ||z === uname) && uname!="")
                   {
-                      
-                    let session_data=localStorage.getItem("session_table");
-                    if(session_data==null)
+                    if(pass!=""&& y === pass) 
                     {
-                      task1=[];
+                        let session_data=localStorage.getItem("session_table");
+                        if(session_data==null)
+                        {
+                          task1=[];
+                          }
+                        else{
+                            task1=JSON.parse(session_data);
+                            }
+                        task1.push({'email':x});
+                        localStorage.setItem("session_table",JSON.stringify(task1));
+                        alert('LOGGED IN SUCCESSFULLY');
+                        
+                        $('#emailadd').val(" ");
+                        $('#pass').val(" ");
+                        window.location.replace("admin.html");
+                          //break;
                       }
-                    else{
-                        task1=JSON.parse(session_data);
-                        }
-                    task1.push({'email':emailadd});
-                    localStorage.setItem("session_table",JSON.stringify(task1));
-                    alert('LOGGED IN SUCCESSFULLY');
-                    
-                    $('#emailadd').val(" ");
-                    $('#pass').val(" ");
-                    window.location.replace("admin.html");
-                    //break;
-                  
+                      //else{alert("wrong password !! try again")}
                   }
+                  //else{alert("Invalid email/phone number")}
       
-                  if(i==len && x !== emailadd && y !== pass)
+                  if(i==len && x !== uname && y !== pass)
                     { 
                       alert('invalid username and password');
                       location.reload();
                     }
-              
             })
             
       });
